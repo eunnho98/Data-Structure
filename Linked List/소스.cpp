@@ -3,7 +3,7 @@
 #include <algorithm>
 using namespace std;
 
-class Chain; // Àü¹æ ¼±¾ğ
+class Chain; // ì „ë°© ì„ ì–¸
 
 class Node {
 	friend class Chain;
@@ -16,24 +16,23 @@ public:
 		link = next;
 	}
 	Node* Link() { return link; }
-	~Node() { delete link; }
 };
 
 class Chain {
 private:
-	Node* first; // first ³ëµå¸¦ ÅëÇØ ¸ğµç node¿¡ Á¢±Ù
-public: // Chain Á¶ÀÛ
+	Node* first; // first ë…¸ë“œë¥¼ í†µí•´ ëª¨ë“  nodeì— ì ‘ê·¼
+public: // Chain ì¡°ì‘
 	class ChainIterator {
 	private:
-		Node* current; // ÇöÀç ³ëµå
+		Node* current; // í˜„ì¬ ë…¸ë“œ
 	public:
-		// »ı¼ºÀÚ
+		// ìƒì„±ì
 		ChainIterator(Node* startNode = NULL) {
 			current = startNode;
 		}
-		// ¿ªÂüÁ¶ ¿¬»êÀÚ
+		// ì—­ì°¸ì¡° ì—°ì‚°ì
 		int& operator*() const { return current->data; }
-		// Áõ°¡
+		// ì¦ê°€
 		ChainIterator& operator++() {
 			current = current->link;
 			return *this;
@@ -53,22 +52,23 @@ public: // Chain Á¶ÀÛ
 
 	};
 	Chain() { first = new Node(); }
+	~Chain();
 	void Insert_Tail(const int& item);
-	void Insert_Mid(const int& after, const int& item); //after ¾ÆÀÌÅÛ µÚ¿¡ item »ğÀÔ
+	void Insert_Mid(const int& after, const int& item); //after ì•„ì´í…œ ë’¤ì— item ì‚½ì…
 	void Insert_First(const int& item);
-	void Delete(const int& item); // ¾ÆÀÌÅÛÀ¸·Î »èÁ¦
-	void Delete(Node*&); // ³ëµå ¹øÈ£·Î »èÁ¦
-	void Insert(Node*&); // ³ëµå ¹øÈ£·Î »ğÀÔ
-	int GetNodeNum(); // ³ëµå °³¼ö ¹İÈ¯
-	Chain& SumChain(Chain& c1, Chain& c2); // µÎ ¿¬°á¸®½ºÆ® ÇÕÄ¡±â
-	Chain& SumChain_Sort(Chain& c1, Chain& c2); // µÎ ¿¬°á¸®½ºÆ® ¿À¸§Â÷¼ø ÇÕÄ¡±â
-	void DeleteOddNode(Node*& x); // È¦¼ö¹ø Â° ³ëµå »èÁ¦
-	void Reverse(); // ¿¬°á¸®½ºÆ® µÚÁı±â
+	void Delete(const int& item); // ì•„ì´í…œìœ¼ë¡œ ì‚­ì œ
+	void Delete(Node*&); // ë…¸ë“œ ë²ˆí˜¸ë¡œ ì‚­ì œ
+	void Insert(Node*&); // ë…¸ë“œ ë²ˆí˜¸ë¡œ ì‚½ì…
+	int GetNodeNum(); // ë…¸ë“œ ê°œìˆ˜ ë°˜í™˜
+	Chain& SumChain(Chain& c1, Chain& c2); // ë‘ ì—°ê²°ë¦¬ìŠ¤íŠ¸ í•©ì¹˜ê¸°
+	Chain& SumChain_Sort(Chain& c1, Chain& c2); // ë‘ ì—°ê²°ë¦¬ìŠ¤íŠ¸ ì˜¤ë¦„ì°¨ìˆœ í•©ì¹˜ê¸°
+	void DeleteOddNode(Node*& x); // í™€ìˆ˜ë²ˆ ì§¸ ë…¸ë“œ ì‚­ì œ
+	void Reverse(); // ì—°ê²°ë¦¬ìŠ¤íŠ¸ ë’¤ì§‘ê¸°
 	void print();
-	int FindMin(); // ÃÖ¼Ò°ª Ã£±â
-	ChainIterator begin() { return ChainIterator(first); } // first ³ëµå¸¦ °¡¸®Å°´Â iterator »ı¼º
-	ChainIterator end() { return ChainIterator(NULL); } // ¸¶Áö¸· ³ëµåÀÇ link¸¦ °¡¸®Å°´Â iterator »ı¼º
-	void CopytoArray(int *&arr, int&); // ChainÀ» ¹è¿­¿¡ º¹»ç
+	int FindMin(); // ìµœì†Œê°’ ì°¾ê¸°
+	ChainIterator begin() { return ChainIterator(first); } // first ë…¸ë“œë¥¼ ê°€ë¦¬í‚¤ëŠ” iterator ìƒì„±
+	ChainIterator end() { return ChainIterator(NULL); } // ë§ˆì§€ë§‰ ë…¸ë“œì˜ linkë¥¼ ê°€ë¦¬í‚¤ëŠ” iterator ìƒì„±
+	void CopytoArray(int *&arr, int&); // Chainì„ ë°°ì—´ì— ë³µì‚¬
 	
 	friend ostream& operator<<(ostream& os, Chain& c);
 
@@ -86,8 +86,16 @@ ostream& operator<<(ostream& os, Chain& c) {
 	return os;
 }
 
+Chain::~Chain() {
+	while(first != NULL) {
+		Node* tmp = first;
+		first = first->link;
+		delete tmp;
+	}
+}
+
 void Chain::Insert_Tail(const int& item) { 
-	if (first->link == NULL) { // °ø¹é ¸®½ºÆ®¿¡ »ğÀÔ
+	if (first->link == NULL) { // ê³µë°± ë¦¬ìŠ¤íŠ¸ì— ì‚½ì…
 		first->link = new Node(item);
 	}
 	else { 
@@ -111,7 +119,7 @@ void Chain::Insert_Mid(const int& after, const int& item) {
 }
 
 void Chain::Insert_First(const int& item) {
-	if (first->link == NULL) { // °ø¹é ¸®½ºÆ®¿¡ »ğÀÔ
+	if (first->link == NULL) { // ê³µë°± ë¦¬ìŠ¤íŠ¸ì— ì‚½ì…
 		first->link = new Node(item);
 	}
 	else {
@@ -141,12 +149,12 @@ void Chain::Delete(const int& item) {
 		before = before->link;
 	}
 	before->link = tmp->link;
-	tmp->link = NULL; // ¹Ù·Î ÇØÁ¦½ÃÅ°¸é tmpµÚ¿¡ µş·ÁÀÖ´Â ³ëµåµéµµ ´Ù ÇØÁ¦µÊ, before->link°¡ NULLÀ» °¡¸®Å°°ÔµÊ
+	tmp->link = NULL; // ë°”ë¡œ í•´ì œì‹œí‚¤ë©´ tmpë’¤ì— ë”¸ë ¤ìˆëŠ” ë…¸ë“œë“¤ë„ ë‹¤ í•´ì œë¨, before->linkê°€ NULLì„ ê°€ë¦¬í‚¤ê²Œë¨
 	delete tmp;
 }
 
 void Chain::Delete(Node*& x) {
-	cout << "¸î ¹øÂ° ³ëµå¸¦ »èÁ¦ÇÒ °ÍÀÔ´Ï±î? : ";
+	cout << "ëª‡ ë²ˆì§¸ ë…¸ë“œë¥¼ ì‚­ì œí•  ê²ƒì…ë‹ˆê¹Œ? : ";
 	int num;
 	cin >> num;
 	x = first;
@@ -163,7 +171,7 @@ void Chain::Delete(Node*& x) {
 }
 
 void Chain::Insert(Node*& x) {
-	cout << "¸î ¹øÂ° ³ëµå ´ÙÀ½¿¡ »ğÀÔÇÒ °ÍÀÔ´Ï±î? : ";
+	cout << "ëª‡ ë²ˆì§¸ ë…¸ë“œ ë‹¤ìŒì— ì‚½ì…í•  ê²ƒì…ë‹ˆê¹Œ? : ";
 	int num;
 	cin >> num;
 	Node* tmp = first;
@@ -302,7 +310,7 @@ int Chain::FindMin() {
 
 void Chain::print() {
 	if (first->link == NULL || first == NULL) {
-		cout << "ºó ¸®½ºÆ®ÀÔ´Ï´Ù" << endl;
+		cout << "ë¹ˆ ë¦¬ìŠ¤íŠ¸ì…ë‹ˆë‹¤" << endl;
 	}
 	else {
 		Node* tmp = first->link;
